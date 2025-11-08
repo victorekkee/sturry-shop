@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sturry - Dropship Winkel</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;padding:0;color:#111;background:#f9f9f9}
+    header{background:#ffffff;color:#111;padding:24px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+    .container{max-width:1000px;margin:24px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .card{border:1px solid #e6e6e6;border-radius:12px;padding:12px;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.05)}
+    img{width:100%;height:180px;object-fit:cover;border-radius:8px}
+    .prijs{font-weight:700;margin-top:8px}
+    footer{padding:24px;text-align:center;color:#666}
+    .koop{display:inline-block;margin-top:8px;padding:10px 14px;border-radius:8px;text-decoration:none;background:#4caf50;color:#fff;cursor:pointer}
+    @media (max-width:520px){img{height:140px}}
+    .modal{display:none;position:fixed;z-index:999;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgba(0,0,0,0.5)}
+    .modal-content{background-color:#fff;margin:10% auto;padding:20px;border-radius:12px;max-width:400px;position:relative}
+    .sluit{color:#aaa;position:absolute;top:10px;right:14px;font-size:28px;font-weight:bold;cursor:pointer}
+    .sluit:hover{color:#000}
+    input[type=text], input[type=email], input[type=password]{width:100%;padding:10px;margin:6px 0 12px 0;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}
+    input[type=submit]{background:#4caf50;color:white;padding:10px;border:none;border-radius:6px;cursor:pointer;width:100%}
+    input[type=submit]:hover{background:#45a049}
+  </style>
+</head>
+<body>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal" style="display:block;">
+    <div class="modal-content">
+      <h3>Login om de items te kopen</h3>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Voer je e-mail in" required>
+        <input type="submit" value="Login">
+      </form>
+      <p>Alleen geautoriseerde gebruikers kunnen content bewerken.</p>
+    </div>
+  </div>
+
+  <header>
+    <h1 contenteditable="false" id="headerTitle">Sturry</h1>
+    <p contenteditable="false" id="headerDesc">Welkom in onze dropship winkel!</p>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2 contenteditable="false" id="productHeading">Producten</h2>
+      <div class="grid">
+        <!-- Product 1 -->
+        <article class="card">
+          <input type="text" id="img1" placeholder="Plak hier de URL van de afbeelding" style="display:none;">
+          <img id="productImg1" src="https://via.placeholder.com/600x400?text=Mini+Printer" alt="Mini Printer">
+          <h3 contenteditable="false" id="prod1Name">Mini Printer</h3>
+          <p class="prijs" contenteditable="false" id="prod1Price">€30</p>
+          <div>
+            <button class="koop" onclick="openForm('Mini Printer',30)">Koop nu</button>
+          </div>
+        </article>
+
+        <!-- Product 2 -->
+        <article class="card">
+          <input type="text" id="img2" placeholder="Plak hier de URL van de afbeelding" style="display:none;">
+          <img id="productImg2" src="https://via.placeholder.com/600x400?text=Mok" alt="Mok">
+          <h3 contenteditable="false" id="prod2Name">Mok</h3>
+          <p class="prijs" contenteditable="false" id="prod2Price">€10</p>
+          <div>
+            <button class="koop" onclick="openForm('Mok',10)">Koop nu</button>
+          </div>
+        </article>
+
+        <!-- Product 3 -->
+        <article class="card">
+          <input type="text" id="img3" placeholder="Plak hier de URL van de afbeelding" style="display:none;">
+          <img id="productImg3" src="https://via.placeholder.com/600x400?text=AirPods+4" alt="AirPods 4">
+          <h3 contenteditable="false" id="prod3Name">AirPods 4</h3>
+          <p class="prijs" contenteditable="false" id="prod3Price">€190</p>
+          <div>
+            <button class="koop" onclick="openForm('AirPods 4',190)">Koop nu</button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bestel Modal -->
+  <div id="bestelModal" class="modal">
+    <div class="modal-content">
+      <span class="sluit" onclick="sluitForm()">&times;</span>
+      <h3 id="productNaam">Product</h3>
+      <p id="productPrijs"></p>
+      <form id="bestelForm" action="https://formsubmit.co/shopsturry@gmail.com" method="POST" target="_blank">
+        <input type="hidden" name="_subject" value="Nieuwe bestelling Sturry">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="text" name="Naam" placeholder="Je naam" required>
+        <input type="email" name="Email" placeholder="Je e-mail" required>
+        <input type="hidden" name="Product" id="formProduct">
+        <input type="hidden" name="Prijs" id="formPrice">
+        <input type="submit" value="Bestelling verzenden">
+      </form>
+      <p>Na verzending ontvang je een Payconiq-betaalverzoek.</p>
+      <p id="formError" style="color:red; display:none;">Er is iets misgegaan bij het verzenden. Probeer het later opnieuw.</p>
+    </div>
+  </div>
+
+  <footer>
+    <small contenteditable="false" id="footerText">Sturry - dropshipping winkel</small>
+  </footer>
+
+  <script>
+    const allowedEmails = ['maesschalck.victor@gmail.com','shopsturry@gmail.com'];
+
+    // Login voor bewerken
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      if(allowedEmails.includes(email)){
+        // Maak content editable en afbeeldingen zichtbaar voor geautoriseerde gebruiker
+        ['headerTitle','headerDesc','productHeading','prod1Name','prod1Price','prod2Name','prod2Price','prod3Name','prod3Price','footerText'].forEach(id => {
+          document.getElementById(id).contentEditable = 'true';
+        });
+        ['img1','img2','img3'].forEach(id => {
+          document.getElementById(id).style.display = 'block';
+        });
+        document.getElementById('loginModal').style.display = 'none';
+      } else {
+        alert('Je bent niet geautoriseerd om te bewerken.');
+      }
+    });
+
+    // Bestelformulier validatie
+    const bestelForm = document.getElementById('bestelForm');
+    const formError = document.getElementById('formError');
+
+    bestelForm.addEventListener('submit', function(e){
+      const naam = bestelForm.querySelector('input[name="Naam"]').value.trim();
+      const email = bestelForm.querySelector('input[name="Email"]').value.trim();
+      if(!naam || !email){
+        e.preventDefault();
+        formError.style.display = 'block';
+        formError.innerText = 'Vul je naam en e-mail correct in.';
+        return;
+      }
+      formError.style.display = 'none';
+    });
+
+    function openForm(product, prijs){
+      document.getElementById('productNaam').innerText = product;
+      document.getElementById('productPrijs').innerText = 'Prijs: €' + prijs;
+      document.getElementById('formProduct').value = product;
+      document.getElementById('formPrice').value = prijs;
+      document.getElementById('bestelModal').style.display = 'block';
+    }
+
+    function sluitForm(){
+      document.getElementById('bestelModal').style.display = 'none';
+    }
+
+    window.onclick = function(event){
+      if(event.target == document.getElementById('bestelModal')) sluitForm();
+    };
+
+    // Live update afbeeldingen voor geautoriseerde gebruikers
+    ['img1','img2','img3'].forEach(function(id){
+      document.getElementById(id).addEventListener('input', function(){
+        document.getElementById('product'+id.replace('img','Img')).src = this.value;
+      });
+    });
+  </script>
+</body>
+</html>
